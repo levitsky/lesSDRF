@@ -9,7 +9,7 @@ from PIL import Image
 import base64
 import io
 
-    
+
 st.set_page_config(
     page_title="Map local metadata",
     layout="wide",
@@ -53,7 +53,7 @@ st.markdown(
     """If you have a local metadata file available, you can use this file to map the data to the required SDRF information. """
 )
 st.markdown(
-    """**Important:** you can upload the file in csv, tsv or xlsx format.  
+    """**Important:** you can upload the file in csv, tsv or xlsx format.
 The order of your raw file names should match the order in which you inputted them in the previous step"""
 )
 
@@ -64,10 +64,10 @@ data_dict = st.session_state["data_dict"]
 
 # if template_df is not in the session state, don't run all the code below
 if "template_df" not in st.session_state:
-    st.error("Please fill in the template file in the Home page first", icon="🚨")  
+    st.error("Please fill in the template file in the Home page first", icon="🚨")
     st.stop()
 else:
-    template_df = st.session_state["template_df"] 
+    template_df = st.session_state["template_df"]
     st.write("**This is your current SDRF file.**")
     st.write(template_df)
 
@@ -142,9 +142,12 @@ if metadata_sheet is not None:
             meta_columns,
         )
     with subm:
-        submitbox = st.checkbox('Ready to match?')
+        submitbut = st.button('Match columns')
     mismatches = []
-    if submitbox:  
+    if submitbut:
+        st.session_state["matching"] = True
+
+    if "matching" in st.session_state:
         col1, col2, col3, col4 = st.columns(4)
 
         selected_col = None
@@ -167,7 +170,7 @@ if metadata_sheet is not None:
                         key=f"matched_col{i}",
                     )
                 with col3:
-                    check = st.checkbox("Match and check ontology", key=f"check{i}")
+                    check = st.button("Match and check ontology", key=f"check{i}")
                     st.write(" ")
                     st.write(" ")
                     st.write(" ")
@@ -187,27 +190,27 @@ if metadata_sheet is not None:
                                         st.error("The age column is not in the correct format, please check and try again")
                                     elif ParsingModule.check_age_format(template_df, "characteristics[age]") == True:
                                         st.success('Great! The local metadata values are valid terms and are mapped to the SDRF file.', icon="✅")
-                                        template_df[matched_col] = metadata_df[selected_col] 
+                                        template_df[matched_col] = metadata_df[selected_col]
                             if matched_col == "characteristics[sex]":
                                 #check if input_values only contains M, F or NA and no other strings or numbers
                                 if all(x in ['M', 'F', 'NA'] for x in input_values):
                                     with col4:
                                         st.success('Great! The local metadata values are valid terms and are mapped to the SDRF file.', icon="✅")
-                                    template_df[matched_col] = metadata_df[selected_col] 
+                                    template_df[matched_col] = metadata_df[selected_col]
                                 else:
                                     with col4:
                                         st.error("The sex column is not in the correct format. It should indiciate M, F or NA, please check and try again")
 
                         elif (matched_col not in value_columns) and name not in data_dict:
-                            with col4: 
+                            with col4:
                                 st.error("This column does not contain ontology-based terms so this column cannot be matched. Please fill it in using the next steps in the sidebar")
 
                         else:
                             onto_elements = data_dict[name]
                             if matched_col == "characteristics[organism]":
-                                map_organism_dict = {'Homo sapiens': ['Human', 'human', 'homo sapiens', 'Homo Sapiens'], 
+                                map_organism_dict = {'Homo sapiens': ['Human', 'human', 'homo sapiens', 'Homo Sapiens'],
                                 'Mus musculus': ['mouse', 'Mouse', 'Mus Musculus', 'mus musculus'],
-                                'Arabidopsis thaliana': ['arabidopsis thaliana', 'Arabidopsis Thaliana', 'arabidopsis', 'Arabidopsis', 'thale cress'], 
+                                'Arabidopsis thaliana': ['arabidopsis thaliana', 'Arabidopsis Thaliana', 'arabidopsis', 'Arabidopsis', 'thale cress'],
                                 'Drosophila melanogaster': ['drosophila', 'Drosophila', 'Drosophila Melanogsaster', 'drosophila melanogaster', 'fruitfly', 'fruit fly'],
                                 'Saccharomyces cerevisiae':['Saccharomyces Cerevisiae', 'saccharomyces cerevisiae', "brewer's yeast", "Brewer's yeast"],
                                 'Caenorhabditis elegans':['C. Elegans', 'C. elegans', 'c. elegans', 'caenorhabditis elegans', 'Caenorhabditis Elegans', 'worm', 'Worm'],
@@ -220,15 +223,15 @@ if metadata_sheet is not None:
                                     for i in input_values:
                                         if i in value:
                                             metadata_df[selected_col].replace(i, key, inplace=True)
-                                            input_values[input_values.index(i)] = key                            
+                                            input_values[input_values.index(i)] = key
                             if not set(input_values).issubset(set(onto_elements)):
                                 not_in_onto = set(input_values) - set(onto_elements)
                                 mismatches.append(not_in_onto)
-                                with col4: 
+                                with col4:
                                     st.error(f'{not_in_onto} are not ontology terms. Select the correct terms in the next steps directly from the ontology', icon="❌")
 
                             elif (set(input_values).issubset(set(onto_elements))) and (len(input_values)>=1):
-                                with col4: 
+                                with col4:
                                     st.success('Great! The local metadata values are valid terms and are mapped to the SDRF file.' , icon="✅")
                                 template_df[matched_col] = metadata_df[selected_col]
                         if matched_col == None:

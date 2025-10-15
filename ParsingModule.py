@@ -87,7 +87,7 @@ def get_obo_subclasses(onto, obo_id, obo_label, d=None, distance=1):
     if d is None:
         d = defaultdict(dict)
     """This function is built on pronto.
-    It takes the path to the ontology file in obo format, the desired term id from the root node (e.g. MS:1000031) and the term label (e.g. 'instrument model') 
+    It takes the path to the ontology file in obo format, the desired term id from the root node (e.g. MS:1000031) and the term label (e.g. 'instrument model')
     and returns a nested dictionary of all subclasses of the given term. To only get the direct subclasses, the distance is set to 1
     """
 
@@ -167,8 +167,8 @@ def open_gzipped_json(filename):
     return data
 
 def fill_in_from_list(df, column, values_list=None, multiple_in_one=False):
-    """provide dataframe, column and optional a list of values. 
-    reates an editable dataframe in which only that column can be modified possibly with the values from the list
+    """Provide dataframe, column and optional a list of values.
+    Creates an editable dataframe in which only that column can be modified possibly with the values from the list
     If the list is empty, the column is freely editable
     If the list contains only one value, the column is filled with that value
     If the list contains more than one value, a dropdown menu is created with the values from the list
@@ -201,7 +201,7 @@ def fill_in_from_list(df, column, values_list=None, multiple_in_one=False):
             data_return_mode=DataReturnMode.AS_INPUT)
         df = grid_return["data"]
         df.replace("empty", np.nan, inplace=True)
-              
+
     elif values_list is None: # if there is no list of values, make the column editable
         builder.configure_column(column, editable=True, cellStyle = cell_style)
         builder.configure_grid_options(enableRangeSelection=True, enableFillHandle=True, suppressMovableColumns=True, singleClickEdit=True)
@@ -236,7 +236,7 @@ def multiple_ontology_tree(column, element_list, nodes, df, multiple_in_one = Fa
                     step=1)
             with col3:
                 if multiple_in_one:
-                    multiple_in_one_sel = st.radio(f"Are there multiple {column} within one sample?", ("No", "Yes"))     
+                    multiple_in_one_sel = st.radio(f"Are there multiple {column} within one sample?", ("No", "Yes"))
                     if multiple_in_one_sel == "Yes":
                         for i in range(number-1):
                             # add column next to the original column if it is not already there
@@ -270,7 +270,7 @@ def multiple_ontology_tree(column, element_list, nodes, df, multiple_in_one = Fa
         s = st.form_submit_button("Submit selection")
         if s:
             st.write(f"Selection contains: {all}")
- 
+
     if s & (len(all) == 1) & number == 1:
         df[column] = all[0]
         st.experimental_rerun()
@@ -285,7 +285,7 @@ def multiple_ontology_tree(column, element_list, nodes, df, multiple_in_one = Fa
         go = builder.build()
         grid_return = AgGrid(df,gridOptions=go,update_mode=GridUpdateMode.MANUAL,data_return_mode=DataReturnMode.AS_INPUT)
         df = grid_return["data"]
-    df.replace("empty", np.nan, inplace=True)   
+    df.replace("empty", np.nan, inplace=True)
     return df
 
 
@@ -341,7 +341,7 @@ def check_df_for_ontology_terms(df, columns_to_check, column_ontology_dict):
                 not_in_onto = set(uniques) - set(accepted)
                 st.error(f'{not_in_onto} are not accepted in the characteristics[sex] column. Please use M, F or unknown')
                 clear_columns.append(i)
-    
+
     # if there are columns that are not in the ontology, ask if the user wants to clear them
     if len(clear_columns) >= 1:
         st.error(f'The following columns contain elements that are not in the ontology: {clear_columns}')
@@ -363,7 +363,7 @@ def check_age_format(df, column):
 
 
     Returns:
-    tuple: (bool, list) where bool indicates if all data in the column follows the age formatting 
+    tuple: (bool, list) where bool indicates if all data in the column follows the age formatting
            and list contains the wrong parts (if any).
     """
     wrong_parts = []
@@ -374,7 +374,7 @@ def check_age_format(df, column):
     return False if wrong_parts else True, wrong_parts
 
 def convert_df(df):
-    """This function requires a dataframe and sorts its columns as source name - characteristics - others - comment. 
+    """This function requires a dataframe and sorts its columns as source name - characteristics - others - comment.
     Leading and trailing whitespaces are removed from all columns
     It then converts the dataframe to a tsv file and downloads it
     It also adds an comment[tool metadata] to indicate it was built with lesSDRF and ontology versioning"""
@@ -414,7 +414,7 @@ def convert_df(df):
     else:
         # Filter out 'nan' errors in 'characteristics[organism]'
         filtered_message = "\n".join(
-            line for line in message.split("\n") 
+            line for line in message.split("\n")
             if '"nan"' not in line and 'characteristics[organism]' not in line
         ).strip()
 
@@ -441,7 +441,7 @@ def autocomplete_species_search(taxum_list, search_term):
         # if length is between 0 and 500, display the options
         if len(filtered_options) > 0 and len(filtered_options) < 500:
             with col1:
-                selected_options = st.multiselect("Some options closely matching your search time could be found", filtered_options)      
+                selected_options = st.multiselect("Some options closely matching your search time could be found", filtered_options)
             # Display the selected options
             with col2:
                 if selected_options:

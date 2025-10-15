@@ -113,10 +113,10 @@ button_styles = f"""
 st.title("""3. Required columns""")
 # if template_df is not in the session state, don't run all the code below
 if "template_df" not in st.session_state:
-    st.error("Please fill in the template file in the Home page first", icon="🚨")  
+    st.error("Please fill in the template file in the Home page first", icon="🚨")
     st.stop()
 else:
-    template_df = st.session_state["template_df"] 
+    template_df = st.session_state["template_df"]
     with st.container():
         st.write("**This is your current SDRF file.**")
         st.dataframe(template_df)
@@ -142,9 +142,9 @@ with st.sidebar:
                  *The experimental metadata has been generated using lesSDRF and is available through ProteomeXchange with the dataset identifier [PXDxxxxxxx]*""")
 
 if selection == 'start':
-    st.write("""In the sidebar, all the empty columns that are required for you SDRF file are listed. Select the one you want to annotate first.  
-    When a column is filled in, it will disappear from the sidebar so you can keep track on which columns still require input.  
-    When you want to reannotate a previously filled in column, you can do so by clicking on the **undo column** button in the sidebar.  
+    st.write("""In the sidebar, all the empty columns that are required for you SDRF file are listed. Select the one you want to annotate first.
+    When a column is filled in, it will disappear from the sidebar so you can keep track on which columns still require input.
+    When you want to reannotate a previously filled in column, you can do so by clicking on the **undo column** button in the sidebar.
     """)
     st.write("""Every page will start with your current SDRF file and at the bottom of the page there is a button to download the intermediate SDRF file""")
 
@@ -155,7 +155,7 @@ if selection == 'start':
 if selection == "source name":
     st.write(
         """The source name is the unique sample name (it can be present multiple times if the same sample is used several times in the same dataset) eg. healthy_patient_1, diseased_patient_1
-    If you did not add it using the previous mapping function, you can input it here manually.")  
+    If you did not add it using the previous mapping function, you can input it here manually.")
     """
     )
     st.write(
@@ -167,7 +167,7 @@ if selection == "source name":
 
 if selection == "assay name":
     st.write(
-        """The assay name is a name for the run file, this has to be a uniqe value eg. run 1 - run 2 - run 3_fraction1. If you did not add it using the previous mapping function, you can input it here 
+        """The assay name is a name for the run file, this has to be a uniqe value eg. run 1 - run 2 - run 3_fraction1. If you did not add it using the previous mapping function, you can input it here
         manually."""
     )
     st.write(
@@ -175,7 +175,7 @@ if selection == "assay name":
     )
     template_df = ParsingModule.fill_in_from_list(template_df, "assay name")
     st.session_state["template_df"] = template_df
-    
+
 if selection == "technology type":
     with st.form("Choose the technology type in your sample"):
         tech_type = st.radio(
@@ -195,7 +195,7 @@ if selection == "characteristics[age]":
     multiple = st.selectbox(f"Are there multiple ages in your data?", ("","No", "Yes", "Not available"), help="If you select Not available, the column will be filled in with 'Not available'")
     if multiple == "Yes":
         template_df = ParsingModule.fill_in_from_list(template_df, "characteristics[age]")
-        is_valid, wrong_values = ParsingModule.check_age_format(template_df, "characteristics[age]") 
+        is_valid, wrong_values = ParsingModule.check_age_format(template_df, "characteristics[age]")
         if not is_valid:
             st.error(f"The age column is not in the correct format. Wrong values: {', '.join(wrong_values)}")
             st.stop()
@@ -221,7 +221,7 @@ if selection == "characteristics[age]":
         template_df["characteristics[age]"] = "Not available"
         update_session_state(template_df)
         st.experimental_rerun()
-        
+
 if selection == "comment[alkylation reagent]":
     st.subheader("Input the alkylation reagent that was used in your experiment")
     all_alkylation_elements = data_dict["all_alkylation_elements"]
@@ -258,7 +258,7 @@ if selection == "comment[cleavage agent details]":
         "Select the cleavage agents used in your sample If no cleavage agent was used e.g. in top down proteomics, choose *NoEnzyme*",
         cleavage_list,
     )
-    s = st.checkbox("Ready for input?")   
+    s = st.button("Apply")
     if s and len(enzymes) == 1:
         template_df[selection] = enzymes[0]
         st.experimental_rerun()
@@ -322,7 +322,7 @@ if selection == "characteristics[developmental stage]":
     devstage_nodes = data_dict["developmental_stage_nodes"]
     df = ParsingModule.multiple_ontology_tree(selection, all_devstage, devstage_nodes, template_df, multiple_in_one=False)
     update_session_state(df)
-    
+
 if selection == "characteristics[disease]":
     st.subheader("If you have healthy and control samples, indicate healthy samples using *normal*. Input the disease for the other samples using the ontology")
     all_disease_type = data_dict["all_disease_elements"]
@@ -436,7 +436,7 @@ if selection == "characteristics[individual]":
             with col2:
                 number = st.number_input("How many indiviuals are in your data?", min_value=0, step=1)
             with col3:
-                s = st.checkbox("Ready for input?")
+                s = st.button("Apply")
     if sel == "Yes" and s:
         indiv = [*range(1, number + 1, 1)]
         df = ParsingModule.fill_in_from_list(template_df, "characteristics[individual]", indiv)
@@ -475,7 +475,7 @@ if selection == "characteristics[organism]":
                     min_value=0,
                     step=1)
             with col3:
-                multiple_in_one_sel = st.radio(f"Are there multiple organisms within one sample?", ("No", "Yes"))     
+                multiple_in_one_sel = st.radio(f"Are there multiple organisms within one sample?", ("No", "Yes"))
                 if multiple_in_one_sel == "Yes":
                     multiple_in_one = True
                     for i in range(number-1):
@@ -485,20 +485,20 @@ if selection == "characteristics[organism]":
                         columns_to_adapt.append(f"{selection}_{i+1}")
         if multiple == "No":
             number = 1
-    
+
     col6, col7 = st.columns(2)
     with col6:
-        model = st.radio('Does your data contain only classical model organisms?', ('Yes', 'No'), 
+        model = st.radio('Does your data contain only classical model organisms?', ('Yes', 'No'),
         help="Classical model organism being: Homo sapiens, Mus musculus, Drosophila Melanogaster, Arabidopsis thaliana, Xenopus laevis,  Xenopus tropicalis, Saccharomyces cerevisiae, Caenorhabditis elegans, Danio rerio, Escherichia coli and Cavia porcellus")
-        classical_model_organisms = ["Homo sapiens",  
-        "Mus musculus",  
-        "Drosophila Melanogaster",  
-        "Arabidopsis thaliana",  
+        classical_model_organisms = ["Homo sapiens",
+        "Mus musculus",
+        "Drosophila Melanogaster",
+        "Arabidopsis thaliana",
         "Xenopus laevis", "Xenopus tropicalis",
         "Saccharomyces cerevisiae",
-        "Caenorhabditis elegans", 
-        "Danio rerio", 
-        "Escherichia coli", 
+        "Caenorhabditis elegans",
+        "Danio rerio",
+        "Escherichia coli",
         "Cavia porcellus"]
     if model == 'Yes':
         with col7:
@@ -517,12 +517,12 @@ if selection == "characteristics[organism]":
             st.success(f"*NCBITaxon organism data was loaded*", icon="✅")
         else:
             st.error("Failed loading data", icon="❌")
-        st.write("""First, select your species type using the tabs below.  
-        Then you can fill in the name of your species and suggested ontology terms will appear, from which you can select the correct term or the perfectly matched term.  
+        st.write("""First, select your species type using the tabs below.
+        Then you can fill in the name of your species and suggested ontology terms will appear, from which you can select the correct term or the perfectly matched term.
         If you want to consult the ontology tree structure, you can click the button below to the OLS search page.""")
         url = "https://www.ebi.ac.uk/ols/ontologies/ncbitaxon"
-        button = f'<a href="{url}" style="{button_styles}" id="mybutton" target="_blank">OLS NCBITaxon ontology tree</a>'    
-        st.write(button, unsafe_allow_html=True)        
+        button = f'<a href="{url}" style="{button_styles}" id="mybutton" target="_blank">OLS NCBITaxon ontology tree</a>'
+        st.write(button, unsafe_allow_html=True)
 
         tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Eukaryota', 'Archaea', 'Bacteria', 'Viruses', 'Unclassified', 'Other'])
         st.write(st.session_state.selected_species)
@@ -552,7 +552,7 @@ if selection == "characteristics[organism]":
                         st.session_state.selected_species.add(i)
                 else:
                     st.session_state.selected_species.add(ret)
-            
+
         with tab4:
             ret= organism_selection("virus")
             if ret != None:
@@ -562,7 +562,7 @@ if selection == "characteristics[organism]":
                         st.session_state.selected_species.add(i)
                 else:
                     st.session_state.selected_species.add(ret)
-            
+
         with tab5:
             ret= organism_selection("unclassified")
             if ret != None:
@@ -572,7 +572,7 @@ if selection == "characteristics[organism]":
                         st.session_state.selected_species.add(i)
                 else:
                     st.session_state.selected_species.add(ret)
-            
+
         with tab6:
             ret= organism_selection("other_sequences")
             if ret != None:
@@ -583,9 +583,9 @@ if selection == "characteristics[organism]":
                 else:
                     st.session_state.selected_species.add(ret)
     if st.session_state['selected_species'] != {None}:
-        st.write(f"You selected the following species:{st.session_state['selected_species']}")       
+        st.write(f"You selected the following species:{st.session_state['selected_species']}")
     if len(st.session_state["selected_species"]) > number:
-        st.error(f"""Number of selected species is {len(st.session_state['selected_species'])}, but this should be {number} according to the input above. 
+        st.error(f"""Number of selected species is {len(st.session_state['selected_species'])}, but this should be {number} according to the input above.
         Select the species to remove from the list below""")
         # checkbox to remove species
         remove_species = set()
@@ -597,7 +597,7 @@ if selection == "characteristics[organism]":
     elif (len(st.session_state["selected_species"]) < number) and (len(st.session_state["selected_species"]) > 0):
         st.error(f"""Number of selected species is {len(st.session_state['selected_species'])}, but this should be {number} according to the input above.
         Please select {number-len(st.session_state['selected_species'])} more organisms.""")
-    s = st.checkbox("Ready for input?")
+    s = st.button("Apply")
     if s:
         input_list = list(st.session_state["selected_species"])
         if multiple_in_one:
@@ -657,7 +657,7 @@ if selection == "comment[technical replicate]":
             with col2:
                 number = st.number_input("How many technical replicates are in your data?", min_value=0, step=1)
             with col3:
-                s = st.checkbox("Ready for input?")
+                s = st.button("Apply")
     if sel== "Yes" and s:
         tech_rep = [*range(1, number + 1, 1)]
         df = ParsingModule.fill_in_from_list(template_df, selection, tech_rep)
@@ -677,7 +677,7 @@ if selection == "characteristics[biological replicate]":
             with col2:
                 number = st.number_input("How many biological replicates are there?", min_value=0, step=1)
             with col3:
-                s = st.checkbox("Ready for input?")
+                s = st.button("Apply")
     if sel== "Yes" and s:
         biol_rep = [*range(1, int(number) + 1, 1)]
         template_df = ParsingModule.fill_in_from_list(template_df, selection, biol_rep)
@@ -693,7 +693,7 @@ if selection == "comment[precursor mass tolerance]":
     st.subheader(""" Input the precursor mass tolerance and **the unit (ppm or Da)**. click Update twice when finished""")
     df = ParsingModule.fill_in_from_list(template_df, selection)
     update_session_state(df)
-  
+
 
 if selection == "characterics[synthetic peptide]":
     st.subheader(
@@ -718,9 +718,9 @@ if selection == "comment[depletion]":
         st.experimental_rerun()
 
 if selection == "comment[modification parameters]":
-    st.write(""" First select the modifications that are in your sample using the drop down autocomplete menu. After selection you will need to choose the modification type, position and target amino acid.  
-    Modification type can be fixed, variable or annotated. Annotated is used to search for all the occurrences of the modification into an annotated protein database file like UNIPROT XML or PEFF.  
-    Position can be anywhere, protein N-term, protein C-term, any N-term or any C-term.  
+    st.write(""" First select the modifications that are in your sample using the drop down autocomplete menu. After selection you will need to choose the modification type, position and target amino acid.
+    Modification type can be fixed, variable or annotated. Annotated is used to search for all the occurrences of the modification into an annotated protein database file like UNIPROT XML or PEFF.
+    Position can be anywhere, protein N-term, protein C-term, any N-term or any C-term.
     Target amino acid can be any amino acid or X if it's not in the list. Yoy can also select multiple amino acids.""")
     st.write(""" If the modification  of your choice is not available in the drop down list, select "Other" and input the modification name, chemical formula and mass of your custom modification.""")
     st.write(""" The final modification will be formatted following the SDRF guidelines after which you can click on "Submit modifications".""")
@@ -764,7 +764,7 @@ if selection == "comment[modification parameters]":
             final_str = clean_final_str(final_str)
             st.session_state["sdrf_mods"].append(final_str)
             st.write(
-                f""" **Final SDRF notation of modification:**  
+                f""" **Final SDRF notation of modification:**
                 {final_str}"""
             )
         else:
@@ -772,7 +772,7 @@ if selection == "comment[modification parameters]":
             final_str = clean_final_str(final_str)
             st.session_state["sdrf_mods"].append(final_str)
             st.write(
-                f"""**Final SDRF notation of modification:**  
+                f"""**Final SDRF notation of modification:**
                 {final_str}"""
             )
     st.write(f"Confirmed modifications contain: {st.session_state['sdrf_mods']}")
@@ -795,13 +795,13 @@ if selection == "comment[modification parameters]":
             else:
                 template_df.insert(index+i, f"{selection}_{i}", mod)
                 index += 1
-    
+
         st.session_state["template_df"] = template_df
     st.write(template_df)
 
 if selection == "undo column":
-    st.write("""Here you can select a column that you want to reannotate.   
-    Upon clicking the column the current values will be removed and you can reannotate the column.   
+    st.write("""Here you can select a column that you want to reannotate.
+    Upon clicking the column the current values will be removed and you can reannotate the column.
     """)
     col1, col2 = st.columns(2)
     with col1:

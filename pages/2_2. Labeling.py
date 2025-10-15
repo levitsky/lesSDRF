@@ -52,7 +52,7 @@ st.markdown(
 
 st.title("2. Labeling")
 st.markdown(
-    """If a raw file contains multiple labels, every label will need to be annotated on a different row. Here you can map label information to your raw files. 
+    """If a raw file contains multiple labels, every label will need to be annotated on a different row. Here you can map label information to your raw files.
     As a result, the raw file information will be duplicated with the correct label filled in"""
 )
 
@@ -60,10 +60,10 @@ data_dict = st.session_state["data_dict"]
 # Get filled in template_df from other page
 # if template_df is not in the session state, don't run all the code below
 if "template_df" not in st.session_state:
-    st.error("Please fill in the template file in the Home page first", icon="🚨")  
+    st.error("Please fill in the template file in the Home page first", icon="🚨")
     st.stop()
 else:
-    template_df = st.session_state["template_df"] 
+    template_df = st.session_state["template_df"]
     st.write("**This is your current SDRF file.**")
     st.write(template_df)
 
@@ -103,7 +103,7 @@ for label in all_selected_labels:
     selected_files = st.multiselect(f"Select files labeled with {label}.", ["ALL"] + template_df["comment[data file]"].values.tolist(), key=f"selected_label_{label}")
     for i in selected_files:
         label_dict[i].append(label)
-ready = st.checkbox('Ready?')
+ready = st.button('Apply')
 # based on the label_dict, duplicate rows with comment[data file] in the keys of the lable_dict
 # duplicate the row with each row having one of the labels in the characteristics[label] column that is in the value of the label_dict
 # if the key is ALL, duplicate the row for each label from the all_selected_labels list

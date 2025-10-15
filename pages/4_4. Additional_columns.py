@@ -54,10 +54,10 @@ st.title("""4. Additional columns""")
 # Get filled in template_df from other page
 # if template_df is not in the session state, don't run all the code below
 if "template_df" not in st.session_state:
-    st.error("Please fill in the template file in the Home page first", icon="🚨")  
+    st.error("Please fill in the template file in the Home page first", icon="🚨")
     st.stop()
 else:
-    template_df = st.session_state["template_df"] 
+    template_df = st.session_state["template_df"]
     with st.container():
         st.write("**This is your current SDRF file.**")
         st.dataframe(template_df)
@@ -91,7 +91,7 @@ all_possible_columns = [
     "comment[fragment mass tolerance]",
     "comment[precursor mass tolerance]",
     "comment[dissociation method]",
-    "comment[depletion]", 
+    "comment[depletion]",
     "comment[collision energy]"
 ]
 # to still add:
@@ -99,7 +99,7 @@ all_possible_columns = [
     #  "characteristics[spiked compound]",
     # characteristcs[mass]
     # "characteristics[synthetic peptide]",
-    # 
+    #
 def update_sidebar(df):
     #get columns from df that are not empty
     used_columns = df.columns[df.isnull().mean() < 1]
@@ -118,10 +118,10 @@ with st.sidebar:
                  *The experimental metadata has been generated using lesSDRF and is available through ProteomeXchange with the dataset identifier [PXDxxxxxxx]*""")
 
 if selection == "start":
-    st.write("""There are still columns that you can add to your SDRF file.  
-    Similar to the previous section, you can select a column to annotate in the sidebar. When a column is filled, it will disappear from the sidebar so you can keep track on which columns you can still add.  
+    st.write("""There are still columns that you can add to your SDRF file.
+    Similar to the previous section, you can select a column to annotate in the sidebar. When a column is filled, it will disappear from the sidebar so you can keep track on which columns you can still add.
     When you want to reannotate a previously filled in column, you can do so by clicking on the **undo column** button in the sidebar.""")
-    st.write(""" At the bottom of the page there are now two download buttons. The first one will download your intermediate SDRF file.   
+    st.write(""" At the bottom of the page there are now two download buttons. The first one will download your intermediate SDRF file.
     The second button will download your final SDRF file after some final checks. """)
 
 if selection == "factor value":
@@ -165,7 +165,7 @@ if selection == "characteristics[age]":
     multiple = st.selectbox(f"Are there multiple ages in your data?", ("","No", "Yes", "Not available"), help="If you select Not available, the column will be filled in with 'Not available'")
     if multiple == "Yes":
         template_df = ParsingModule.fill_in_from_list(template_df, "characteristics[age]")
-        is_valid, wrong_values = ParsingModule.check_age_format(template_df, "characteristics[age]") 
+        is_valid, wrong_values = ParsingModule.check_age_format(template_df, "characteristics[age]")
         if not is_valid:
             st.error(f"The age column is not in the correct format. Wrong values: {', '.join(wrong_values)}")
             st.stop()
@@ -191,7 +191,7 @@ if selection == "characteristics[age]":
         template_df["characteristics[age]"] = "Not available"
         update_session_state(template_df)
         st.experimental_rerun()
-        
+
 if selection == "comment[alkylation reagent]":
     st.subheader("Input the alkylation reagent that was used in your experiment")
     all_alkylation_elements = data_dict["all_alkylation_elements"]
@@ -235,7 +235,7 @@ if selection == "comment[cleavage agent details]":
         "Select the cleavage agents used in your sample If no cleavage agent was used e.g. in top down proteomics, choose *NoEnzyme*",
         cleavage_list,
     )
-    s = st.checkbox("Ready for input?")   
+    s = st.button("Apply")
     if s and len(enzymes) == 1:
         template_df[selection] = enzymes[0]
         st.experimental_rerun()
@@ -248,7 +248,7 @@ if selection == "characteristics[compound]":
         template_df[selection] = np.nan
     st.subheader("If a compound was added to your sample, input the name here")
     compounds = []
-    
+
     col1, col2, col3 = st.columns(3)
     index = template_df.columns.get_loc(selection)
     with col1:
@@ -256,7 +256,7 @@ if selection == "characteristics[compound]":
     with col2:
         multiple_in_one_sel = st.radio("Are there multiple compounds within the same sample?", ("No", "Yes"))
     with col3:
-        ready = st.checkbox('Ready?')
+        ready = st.button("Apply")
     if input_compounds is not None:
         input_compounds = re.sub(" ", "", input_compounds)
         input_compounds = input_compounds.split(",")
@@ -279,7 +279,7 @@ if selection == "characteristics[compound]":
         st.experimental_rerun()
 
 
-if selection == "characteristics[concentration of compound]": 
+if selection == "characteristics[concentration of compound]":
     if selection not in template_df.columns:
         template_df[selection] = np.nan
     st.subheader("Input the concentration with which the compound was added to your sample")
@@ -291,7 +291,7 @@ if selection == "characteristics[concentration of compound]":
     with col2:
         multiple_in_one_sel = st.radio("Are there multiple concentrations within the same sample?", ("No", "Yes"))
     with col3:
-        ready = st.checkbox('Ready?')
+        ready = st.button("Apply")
     if input_concentrations is not None:
         input_concentrations = re.sub(" ", "", input_concentrations)
         input_concentrations = input_concentrations.split(",")
@@ -488,7 +488,7 @@ if selection == "characteristics[organism]":
                     min_value=0,
                     step=1)
             with col3:
-                multiple_in_one_sel = st.radio(f"Are there multiple organisms within one sample?", ("No", "Yes"))     
+                multiple_in_one_sel = st.radio(f"Are there multiple organisms within one sample?", ("No", "Yes"))
                 if multiple_in_one_sel == "Yes":
                     multiple_in_one = True
                     for i in range(number-1):
@@ -498,13 +498,13 @@ if selection == "characteristics[organism]":
                         columns_to_adapt.append(f"{selection}_{i+1}")
         if multiple == "No":
             number = 1
-    
+
     col4, col5 = st.columns(2)
     with col4:
         st.write('Select your species using the tabs below. If you want to consult the ontology tree structure, you can click the button to the OLS search page.')
     with col5:
         url = "https://www.ebi.ac.uk/ols/ontologies/ncbitaxon"
-        button = f'<a href="{url}" style="{button_styles}" id="mybutton" target="_blank">OLS NCBITaxon ontology tree</a>'    
+        button = f'<a href="{url}" style="{button_styles}" id="mybutton" target="_blank">OLS NCBITaxon ontology tree</a>'
         st.write(button, unsafe_allow_html=True)
 
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Eukaryota', 'Archaea', 'Bacteria', 'Viruses', 'Unclassified', 'Other'])
@@ -542,7 +542,7 @@ if selection == "characteristics[organism]":
                     st.session_state.selected_species.add(i)
             else:
                 st.session_state.selected_species.add(ret)
-        
+
     with tab4:
         vi_elem = data_dict["all_virus_elements"]
         search_term = st.text_input("Search for a viral strain here", "")
@@ -554,7 +554,7 @@ if selection == "characteristics[organism]":
                     st.session_state.selected_species.add(i)
             else:
                 st.session_state.selected_species.add(ret)
-        
+
     with tab5:
         un_elem = data_dict["all_unclassified_elements"]
         search_term = st.text_input("Search for an unclassified species here", "")
@@ -566,7 +566,7 @@ if selection == "characteristics[organism]":
                     st.session_state.selected_species.add(i)
             else:
                 st.session_state.selected_species.add(ret)
-        
+
     with tab6:
         other_elem = data_dict["all_other_sequences_elements"]
         search_term = st.text_input("Search for a species here", "")
@@ -579,9 +579,9 @@ if selection == "characteristics[organism]":
             else:
                 st.session_state.selected_species.add(ret)
 
-    st.write(st.session_state["selected_species"])       
+    st.write(st.session_state["selected_species"])
     if len(st.session_state["selected_species"]) > number:
-        st.error(f"""Number of selected species is {len(st.session_state['selected_species'])}, but this should be {number} according to the input above. 
+        st.error(f"""Number of selected species is {len(st.session_state['selected_species'])}, but this should be {number} according to the input above.
         Select the species you cant to remove from the list below""")
         # checkbox to remove species
         remove_species = set()
@@ -786,7 +786,7 @@ if selection == "comment[modification parameters]":
             with col4:
                 final_str = f"NT={name};CF={form};MM={mass}"
                 st.write(
-                    f""" **Final SDRF notation of modification:**  
+                    f""" **Final SDRF notation of modification:**
                  {final_str}"""
                 )
                 done = st.button(
@@ -808,7 +808,7 @@ if selection == "comment[modification parameters]":
             with col4:
                 final_str = f"{unimod[i]};MT={mt_sel};PP={pp_sel};TA={ta_sel}"
                 st.write(
-                    f"""**Final SDRF notation of modification:**  
+                    f"""**Final SDRF notation of modification:**
                     {final_str}"""
                 )
                 done = st.button(
@@ -835,8 +835,8 @@ if selection == "comment[modification parameters]":
     st.write(template_df)
 
 if selection == "undo column":
-    st.write("""Here you can select a column that you want to reannotate.   
-    Upon clicking the column the current values will be removed and you can reannotate the column.   
+    st.write("""Here you can select a column that you want to reannotate.
+    Upon clicking the column the current values will be removed and you can reannotate the column.
     """)
     col1, col2 = st.columns(2)
     with col1:
@@ -844,8 +844,8 @@ if selection == "undo column":
     with col2:
         if st.button("Reannotate"):
             template_df[sel] = np.nan
-            
-            side_bar_columns = update_sidebar(template_df)  
+
+            side_bar_columns = update_sidebar(template_df)
             st.session_state["template_df"] = template_df
             st.experimental_rerun()
 
